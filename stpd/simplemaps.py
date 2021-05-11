@@ -1,6 +1,6 @@
-from io import StringIO
+from io import StringIO, TextIOWrapper
 from tempfile import TemporaryFile
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 from zipfile import ZipFile
 
 import numpy as np
@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 
 
-def extract_zip(input_zip):
+def extract_zip(input_zip: TextIOWrapper) -> Dict[str, str]:
     input_zip = ZipFile(input_zip)
     return {name: input_zip.read(name) for name in input_zip.namelist()}
 
