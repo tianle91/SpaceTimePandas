@@ -23,7 +23,8 @@
 		"p1c2u.docker-compose",
 		"grapecity.gc-excelviewer",
 		"visualstudioexptteam.vscodeintellicode",
-		"yzhang.markdown-all-in-one"
+		"yzhang.markdown-all-in-one",
+		"mechatroner.rainbow-csv"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
