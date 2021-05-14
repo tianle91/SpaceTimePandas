@@ -96,12 +96,10 @@ class ClimateWeatherGC(BaseWeather):
         station_id = get_closest_valid_station_id(self.lat, self.lon, dt)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
-        df = format_df(
-            requests.get(
-                'https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&'
-                f'stationID={station_id}&Year={dt.year}&Month={dt.month}&Day={dt.day}'
-                '&timeframe=1&submit=Download+Data'
-            ).text,
-            default_tzstr=self.tz
-        )
-        return df
+        # format request
+        response_text = requests.get(
+            'https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&'
+            f'stationID={station_id}&Year={dt.year}&Month={dt.month}&Day={dt.day}'
+            '&timeframe=1&submit=Download+Data'
+        ).text
+        return format_df(response_text, default_tzstr=self.tz)
