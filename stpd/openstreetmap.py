@@ -27,9 +27,9 @@ FEATURES = {
 }
 
 
-def get_count(lat, lon, feature_name):
+def get_count_around(lat: float, lon: float, feature_name: str, radius_km: float = 1.) -> int:
     elementType, selector = FEATURES[feature_name]
-    bbox = get_bounding_box_around(lat, lon, radius_km=1.)
+    bbox = get_bounding_box_around(lat, lon, radius_km=radius_km)
     query = overpassQueryBuilder(
         bbox=bbox, elementType=elementType, selector=selector, out='count')
     result = OVERPASS.query(query)
@@ -55,7 +55,7 @@ class OpenStreetMap:
 
         for feature_name in feature_names:
             all_df[f'count_{feature_name}'] = all_df.apply(
-                lambda row: get_count(
+                lambda row: get_count_around(
                     row['target_lat'], row['target_lon'], feature_name=feature_name),
                 axis=1
             )
