@@ -43,8 +43,9 @@ class OpenStreetMap:
     https://github.com/mocnik-science/osm-python-tools
     """
 
-    def __init__(self, lat_lon_list: List[Tuple[float, float]]):
+    def __init__(self, lat_lon_list: List[Tuple[float, float]], radius_km=1.):
         self.lat_lon_list = lat_lon_list
+        self.radius_km = radius_km
 
     def get_features(self, feature_names=None):
 
@@ -57,7 +58,11 @@ class OpenStreetMap:
         for feature_name in feature_names:
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
-                    row['target_lat'], row['target_lon'], feature_name=feature_name),
+                    row['target_lat'],
+                    row['target_lon'],
+                    feature_name=feature_name,
+                    radius_km=self.radius_km
+                ),
                 axis=1
             )
         return all_df
