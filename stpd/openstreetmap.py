@@ -27,6 +27,15 @@ FEATURES = {
 }
 
 
+def get_count(lat, lon, feature_name):
+    elementType, selector = FEATURES[feature_name]
+    bbox = get_bounding_box_around(lat, lon, radius_km=1.)
+    query = overpassQueryBuilder(
+        bbox=bbox, elementType=elementType, selector=selector, out='count')
+    result = OVERPASS.query(query)
+    return result.countElements()
+
+
 class OpenStreetMap:
     """
     https://wiki.openstreetmap.org/
@@ -42,18 +51,7 @@ class OpenStreetMap:
         if feature_names is None:
             feature_names = ['trees']
 
-        all_df = pd.DataFrame({
-            'target_lat': lats,
-            'target_lon': lons,
-        })
-
-        def get_count(lat, lon, feature_name):
-            elementType, selector = FEATURES[feature_name]
-            bbox = get_bounding_box_around(lat, lon, radius_km=1.)
-            query = overpassQueryBuilder(
-                bbox=bbox, elementType=elementType, selector=selector, out='count')
-            result = OVERPASS.query(query)
-            return result.countElements()
+        all_df = pd.DataFrame({'target_lat': lats, 'target_lon': lons})
 
         for feature_name in feature_names:
             all_df[f'count_{feature_name}'] = all_df.apply(
