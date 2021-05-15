@@ -23,7 +23,8 @@ def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float
 
 FEATURES = {
     # https://taginfo.openstreetmap.org/
-    'trees': ('node', '"natural"="tree"')
+    'tree': ('node', '"natural"="tree"'),
+    'building': (['way', 'relation'], '"building"="yes"'),
 }
 
 
@@ -49,7 +50,7 @@ class OpenStreetMap:
 
         lats, lons = zip(*self.lat_lon_list)
         if feature_names is None:
-            feature_names = ['trees']
+            feature_names = ['tree']
 
         all_df = pd.DataFrame({'target_lat': lats, 'target_lon': lons})
 
