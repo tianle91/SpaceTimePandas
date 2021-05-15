@@ -49,10 +49,10 @@ class OpenStreetMap:
 
     def get_features(self, feature_names=None):
 
-        lats, lons = zip(*self.lat_lon_list)
         if feature_names is None:
             feature_names = ['tree']
 
+        lats, lons = zip(*self.lat_lon_list)
         all_df = pd.DataFrame({'target_lat': lats, 'target_lon': lons})
 
         for feature_name in feature_names:
