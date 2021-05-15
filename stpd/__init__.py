@@ -1,9 +1,9 @@
 from .climateweathergc import ClimateWeatherGC
-from .openweathermap import OpenWeatherMap
+from .noaa import NOAA
 from .simplemaps import SimpleMaps
 
 __all__ = [
     'ClimateWeatherGC',
-    'OpenWeatherMap',
+    'NOAA',
     'SimpleMaps',
 ]
