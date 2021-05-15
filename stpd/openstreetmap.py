@@ -37,6 +37,7 @@ class OpenStreetMap:
             'target_lon': lons,
         })
         elementType = 'node'
+        # https://taginfo.openstreetmap.org/
         selector = '"natural"="tree"'
 
         def get_count(lat, lon):
