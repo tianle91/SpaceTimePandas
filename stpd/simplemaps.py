@@ -50,7 +50,7 @@ class SimpleMaps:
         self.lat_lon_list = lat_lon_list
 
     def get_features(self):
-        lats, lons = zip(self.lat_lon_list)
+        lats, lons = zip(*self.lat_lon_list)
         all_df = pd.DataFrame({
             'target_lat': lats,
             'target_lon': lons,
