@@ -21,6 +21,12 @@ def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float
     )
 
 
+FEATURES = {
+    # https://taginfo.openstreetmap.org/
+    'trees': ('node', '"natural"="tree"')
+}
+
+
 class OpenStreetMap:
     """
     https://wiki.openstreetmap.org/
@@ -30,25 +36,29 @@ class OpenStreetMap:
     def __init__(self, lat_lon_list: List[Tuple[float, float]]):
         self.lat_lon_list = lat_lon_list
 
-    def get_features(self):
+    def get_features(self, feature_names=None):
+
         lats, lons = zip(*self.lat_lon_list)
+        if feature_names is None:
+            feature_names = ['trees']
+
         all_df = pd.DataFrame({
             'target_lat': lats,
             'target_lon': lons,
         })
-        elementType = 'node'
-        # https://taginfo.openstreetmap.org/
-        selector = '"natural"="tree"'
 
-        def get_count(lat, lon):
+        def get_count(lat, lon, feature_name):
+            elementType, selector = FEATURES[feature_name]
             bbox = get_bounding_box_around(lat, lon, radius_km=1.)
             query = overpassQueryBuilder(
                 bbox=bbox, elementType=elementType, selector=selector, out='count')
             result = OVERPASS.query(query)
             return result.countElements()
 
-        all_df[f'count_{elementType}_{selector}'] = all_df.apply(
-            lambda row: get_count(row['target_lat'], row['target_lon']),
-            axis=1
-        )
+        for feature_name in feature_names:
+            all_df[f'count_{feature_name}'] = all_df.apply(
+                lambda row: get_count(
+                    row['target_lat'], row['target_lon'], feature_name=feature_name),
+                axis=1
+            )
         return all_df
