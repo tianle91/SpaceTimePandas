@@ -5,7 +5,7 @@ from .simplemaps import SimpleMaps
 
 __all__ = [
     'ClimateWeatherGC',
-    'OpenStreetMap',
     'NOAA',
+    'OpenStreetMap',
     'SimpleMaps',
 ]
