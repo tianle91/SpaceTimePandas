@@ -2,3 +2,4 @@ requests==2.25.1
 pandas==1.2.4
 timezonefinder==5.2.0
 OSMPythonTools==0.3.0
+geopy==2.1.0

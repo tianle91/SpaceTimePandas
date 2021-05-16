@@ -1,23 +1,29 @@
 from typing import Tuple
 
-import numpy as np
+import geopy
+import geopy.distance
 import pandas as pd
+from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
 OVERPASS = Overpass()
 
 
 def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float, float]:
-    # https://stackoverflow.com/questions/1253499/simple-calculations-for-working-with-lat-lon-and-km-distance
-    # Latitude: 1 deg = 110.574 km
-    # Longitude: 1 deg = 111.320*cos(latitude) km
-    lat_delta = radius_km / 110.574
-    lon_delta = radius_km / (111.320 * np.cos(lat * np.pi / 180 * np.pi))
+    """
+    https://stackoverflow.com/questions/24427828/calculate-point-based-on-distance-and-direction
+    """
+    center = Point(lat, lon)
+    r = geopy.distance.distance(kilometers=radius_km)
+    north: Point = r.destination(point=center, bearing=0)
+    east: Point = r.destination(point=center, bearing=90)
+    south: Point = r.destination(point=center, bearing=180)
+    west: Point = r.destination(point=center, bearing=270)
     return (
-        lat - lat_delta,
-        lon - lon_delta,
-        lat + lat_delta,
-        lon + lon_delta
+        south.latitude,
+        west.longitude,
+        north.latitude,
+        east.longitude
     )
 
 
