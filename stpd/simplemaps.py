@@ -1,6 +1,6 @@
 from io import StringIO, TextIOWrapper
 from tempfile import TemporaryFile
-from typing import Dict, List, Tuple
+from typing import Dict
 from zipfile import ZipFile
 
 import numpy as np
