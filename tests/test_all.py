@@ -25,5 +25,5 @@ def test_simplemaps():
 
 
 def test_openstreemap():
-    osm = OpenStreetMap()
+    osm = OpenStreetMap(feature_names=['tree'])
     osm.get_features(LAT, LON)

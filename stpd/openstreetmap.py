@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional, Dict
 
 import geopy
 import geopy.distance
@@ -55,15 +55,34 @@ class OpenStreetMap:
     https://github.com/mocnik-science/osm-python-tools
     """
 
-    def __init__(self, feature_names=None):
+    def __init__(
+        self,
+        feature_names: Optional[List[str]] = None,
+        feature_query_values: Optional[Dict[str, tuple]] = None,
+    ):
+        """
+        Args:
+            feature_names: names of features in FEATURES
+            feature_query_values: dict of feature_name to (elementType, selector), like in FEATURES.
+                These are passed into overpassQueryBuilder.
+        """
+        if (feature_names is None) and (feature_query_values is None):
+            raise ValueError('Some features need to be set.')
         if feature_names is None:
-            feature_names = ['tree']
+            feature_names = []
         self.feature_names = feature_names
+        if feature_query_values is None:
+            feature_query_values = {}
+        self.feature_query_values = feature_query_values
 
     def get_features(self, lat, lon, radius_km=1.):
         all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
-        for feature_name in self.feature_names:
-            elementType, selector = FEATURES[feature_name]
+        selected_features = {
+            **{feature_name: FEATURES[feature_name] for feature_name in self.feature_names},
+            **self.feature_query_values
+        }
+        for feature_name in selected_features:
+            elementType, selector = selected_features[feature_name]
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
                     row['target_lat'],
