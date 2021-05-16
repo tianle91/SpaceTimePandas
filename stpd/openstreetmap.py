@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, Optional, Dict
+from typing import Dict, List, Optional, Tuple, Union
 
 import geopy
 import geopy.distance
