@@ -3,8 +3,8 @@ from datetime import date
 from stpd import NOAA, ClimateWeatherGC, OpenStreetMap, SimpleMaps
 
 # Toronto
-LAT = 43.700111
-LON = -79.416298
+LAT = 43.6534817
+LON = -79.3839347
 START_DATE = date(2021, 5, 7)
 END_DATE = date(2021, 5, 9)
 
