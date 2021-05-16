@@ -23,12 +23,15 @@ def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float
 
 FEATURES = {
     # https://taginfo.openstreetmap.org/
+    # TODO: predefined or user defined features for passing into overpassQueryBuilder
+    # feature_name: (elementType, selector)
     'tree': ('node', '"natural"="tree"'),
     'building': (['way', 'relation'], '"building"="yes"'),
 }
 
 
 def get_count_around(lat: float, lon: float, feature_name: str, radius_km: float = 1.) -> int:
+    # TODO: do single call with multiple feature_name
     elementType, selector = FEATURES[feature_name]
     bbox = get_bounding_box_around(lat, lon, radius_km=radius_km)
     query = overpassQueryBuilder(
@@ -43,25 +46,20 @@ class OpenStreetMap:
     https://github.com/mocnik-science/osm-python-tools
     """
 
-    def __init__(self, lat_lon_list: List[Tuple[float, float]], radius_km=1.):
-        self.lat_lon_list = lat_lon_list
-        self.radius_km = radius_km
-
-    def get_features(self, feature_names=None):
-
+    def __init__(self, feature_names=None):
         if feature_names is None:
             feature_names = ['tree']
+        self.feature_names = feature_names
 
-        lats, lons = zip(*self.lat_lon_list)
-        all_df = pd.DataFrame({'target_lat': lats, 'target_lon': lons})
-
-        for feature_name in feature_names:
+    def get_features(self, lat, lon, radius_km=1.):
+        all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
+        for feature_name in self.feature_names:
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
                     row['target_lat'],
                     row['target_lon'],
                     feature_name=feature_name,
-                    radius_km=self.radius_km
+                    radius_km=radius_km
                 ),
                 axis=1
             )

@@ -1,7 +1,5 @@
 from datetime import date
 
-import pytest
-
 from stpd import NOAA, ClimateWeatherGC, OpenStreetMap, SimpleMaps
 
 # Toronto
@@ -21,25 +19,11 @@ def test_cwgc():
     cwgc.get_historical(START_DATE, END_DATE)
 
 
-@pytest.mark.parametrize(
-    'lat_lon_list',
-    [
-        pytest.param([(LAT, LON)], id='single'),
-        pytest.param([(LAT, LON), (LAT, LON)], id='double')
-    ]
-)
-def test_simplemaps(lat_lon_list):
-    sm = SimpleMaps(lat_lon_list=lat_lon_list)
-    sm.get_features()
+def test_simplemaps():
+    sm = SimpleMaps()
+    sm.get_features(LAT, LON)
 
 
-@pytest.mark.parametrize(
-    'lat_lon_list',
-    [
-        pytest.param([(LAT, LON)], id='single'),
-        pytest.param([(LAT, LON), (LAT, LON)], id='double')
-    ]
-)
-def test_openstreemap(lat_lon_list):
-    osm = OpenStreetMap(lat_lon_list=lat_lon_list)
-    osm.get_features()
+def test_openstreemap():
+    osm = OpenStreetMap()
+    osm.get_features(LAT, LON)

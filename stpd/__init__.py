@@ -1,6 +1,6 @@
 from .climateweathergc import ClimateWeatherGC
-from .openstreetmap import OpenStreetMap
 from .noaa import NOAA
+from .openstreetmap import OpenStreetMap
 from .simplemaps import SimpleMaps
 
 __all__ = [

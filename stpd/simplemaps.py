@@ -46,14 +46,10 @@ class SimpleMaps:
     https://simplemaps.com/data/world-cities
     """
 
-    def __init__(self, lat_lon_list: List[Tuple[float, float]]):
-        self.lat_lon_list = lat_lon_list
-
-    def get_features(self):
-        lats, lons = zip(*self.lat_lon_list)
+    def get_features(self, lat, lon):
         all_df = pd.DataFrame({
-            'target_lat': lats,
-            'target_lon': lons,
+            'target_lat': [lat],
+            'target_lon': [lon],
         }, dtype=float).merge(WORLDCITIES, how='cross')
         all_df['distance'] = all_df.apply(
             lambda row: euclidean_distance(
