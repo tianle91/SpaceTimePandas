@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple, Union
 
 import geopy
 import geopy.distance
@@ -36,12 +36,15 @@ FEATURES = {
 }
 
 
-def get_count_around(lat: float, lon: float, feature_name: str, radius_km: float = 1.) -> int:
-    # TODO: do single call with multiple feature_name
-    elementType, selector = FEATURES[feature_name]
-    bbox = get_bounding_box_around(lat, lon, radius_km=radius_km)
+def get_count_around(
+    lat: float, lon: float, elementType: Union[str, List[str]], selector: str, radius_km: float = 1.
+) -> int:
     query = overpassQueryBuilder(
-        bbox=bbox, elementType=elementType, selector=selector, out='count')
+        bbox=get_bounding_box_around(lat, lon, radius_km=radius_km),
+        elementType=elementType,
+        selector=selector,
+        out='count'
+    )
     result = OVERPASS.query(query)
     return result.countElements()
 
@@ -60,11 +63,13 @@ class OpenStreetMap:
     def get_features(self, lat, lon, radius_km=1.):
         all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
         for feature_name in self.feature_names:
+            elementType, selector = FEATURES[feature_name]
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
                     row['target_lat'],
                     row['target_lon'],
-                    feature_name=feature_name,
+                    elementType=elementType,
+                    selector=selector,
                     radius_km=radius_km
                 ),
                 axis=1
