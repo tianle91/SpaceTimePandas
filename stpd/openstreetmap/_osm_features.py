@@ -1,8 +1,7 @@
 from typing import Dict, List, Tuple, Union
 
+# https://taginfo.openstreetmap.org/
 FEATURES: Dict[str, Tuple[Union[str, List[str]], str]] = {
-    # https://taginfo.openstreetmap.org/
-    # TODO: predefined or user defined features for passing into overpassQueryBuilder
     # feature_name: (elementType, selector)
     'tree': ('node', '"natural"="tree"'),
     'building': (['way', 'relation'], '"building"="yes"'),
