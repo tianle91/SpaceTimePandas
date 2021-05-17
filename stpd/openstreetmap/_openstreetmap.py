@@ -6,6 +6,8 @@ import pandas as pd
 from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
+from ._osm_features import FEATURES
+
 OVERPASS = Overpass()
 
 
@@ -25,15 +27,6 @@ def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float
         north.latitude,
         east.longitude
     )
-
-
-FEATURES = {
-    # https://taginfo.openstreetmap.org/
-    # TODO: predefined or user defined features for passing into overpassQueryBuilder
-    # feature_name: (elementType, selector)
-    'tree': ('node', '"natural"="tree"'),
-    'building': (['way', 'relation'], '"building"="yes"'),
-}
 
 
 def get_count_around(
