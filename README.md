@@ -38,7 +38,7 @@ Set up start and end dates for historical weather.
 ```
 
 `climate.weather.gc.ca` collects data from Canadian weather stations.
-```
+```python
 >>> from stpd import ClimateWeatherGC
 >>> cwgc = ClimateWeatherGC(lat, lon)
 >>> cwgc.get_historical(start_date, end_date).tail()
