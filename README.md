@@ -3,7 +3,11 @@
 
 Location and date features from a bunch of api sources to Pandas.
 
-## Demo
+```
+pip install SpaceTimePandas
+```
+
+# Demo
 See also the [notebook](demo.ipynb).
 
 You'll need to get `lat, lon` from addresses or location names if you don't have it.
@@ -14,7 +18,7 @@ You'll need to get `lat, lon` from addresses or location names if you don't have
 (43.6534817, -79.3839347)
 ```
 
-### Historical weather features 
+## Historical weather features 
 Set up start and end dates for historical weather.
 ```python
 >>> from datetime import date
@@ -52,17 +56,7 @@ Set up start and end dates for historical weather.
 0         NaN              NaN     NaN 2021-05-07 00:00:00-04:00  
 ```
 
-### Location features
-`OpenStreetMap` can be used to count map features in a radius around a location.
-Check [here](stpd/openstreetmap/_osm_features.py) for a complete set of pre-defined features.
-```python
->>> from stpd import OpenStreetMap
->>> osm = OpenStreetMap(feature_names=['natural=tree'])
->>> osm.get_features(lat, lon)
-   target_lat  target_lon  count_natural=tree
-0   43.653482  -79.383935                 719
-```
-
+## Location features
 `SimpleMaps` provide basic city features
 ```python
 >>> from stpd import SimpleMaps
@@ -73,4 +67,22 @@ Check [here](stpd/openstreetmap/_osm_features.py) for a complete set of pre-defi
 
   iso3 admin_name  capital  population          id  distance  
 0  CAN    Ontario      NaN   5429524.0  1124279679  0.088857  
+```
+
+### OpenStreetMap
+`OpenStreetMap` can be used to count map features in a radius around a location.
+Check [here](stpd/openstreetmap/_osm_features.py) for a complete set of pre-defined values for `feature_names`.
+```python
+>>> from stpd import OpenStreetMap
+>>> osm = OpenStreetMap(feature_names=['natural=tree'])
+>>> osm.get_features(lat, lon)
+   target_lat  target_lon  count_natural=tree
+0   43.653482  -79.383935                 719
+```
+Equivalently, you can use `feature_query_values` to query for your own tags of interest.
+```python
+>>> osm = OpenStreetMap(feature_query_values={'natural=tree': ('node', '"natural"="tree"')})
+>>> osm.get_features(lat, lon)
+   target_lat  target_lon  count_natural=tree
+0   43.653482  -79.383935                 719
 ```
