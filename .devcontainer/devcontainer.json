@@ -24,7 +24,8 @@
 		"grapecity.gc-excelviewer",
 		"visualstudioexptteam.vscodeintellicode",
 		"yzhang.markdown-all-in-one",
-		"mechatroner.rainbow-csv"
+		"mechatroner.rainbow-csv",
+		"bungcip.better-toml"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
