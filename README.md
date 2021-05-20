@@ -26,7 +26,8 @@ Set up start and end dates for historical weather.
 >>> end_date = date(2021, 5, 9)
 ```
 
-`NOAA` provides a hugeclimate data from a huge variety of weather stations.
+### NOAA
+`NOAA` provides climate data from a huge variety of weather stations.
 ```python
 >>> from stpd import NOAA
 >>> noaa = NOAA(lat, lon)
@@ -37,6 +38,7 @@ Set up start and end dates for historical weather.
 2  CA00615S001   0.0  130.0     70  10.0   0.0   0.0 2021-05-09 00:00:00-04:00
 ```
 
+### Government of Canada
 `climate.weather.gc.ca` collects data from Canadian weather stations.
 ```python
 >>> from stpd import ClimateWeatherGC
@@ -57,6 +59,8 @@ Set up start and end dates for historical weather.
 ```
 
 ## Location features
+
+### SimpleMaps
 `SimpleMaps` provide basic city features
 ```python
 >>> from stpd import SimpleMaps
@@ -71,14 +75,31 @@ Set up start and end dates for historical weather.
 
 ### OpenStreetMap
 `OpenStreetMap` can be used to count map features in a radius around a location.
-Check [here](stpd/openstreetmap/_osm_features.py) for a complete set of pre-defined values for `feature_names`.
+You get a default set of features if no arguments are specified.
 ```python
 >>> from stpd import OpenStreetMap
+>>> osm = OpenStreetMap()
+>>> osm.get_features(lat, lon)
+   target_lat  target_lon  count_natural=tree  count_natural=water  \
+0   43.653482  -79.383935                 719                   15   
+
+   count_building=yes  count_building=house  count_amenity=parking  \
+0                1151                    39                    148   
+
+   count_amenity=restaurant  count_service=driveway  
+0                       327                      77 
+```
+
+You can use `feature_names` to query for specific tags. 
+Check [here](stpd/openstreetmap/_osm_features.py) for a complete set of pre-defined values for 
+`feature_names`.
+```python
 >>> osm = OpenStreetMap(feature_names=['natural=tree'])
 >>> osm.get_features(lat, lon)
    target_lat  target_lon  count_natural=tree
 0   43.653482  -79.383935                 719
 ```
+
 Equivalently, you can use `feature_query_values` to query for your own tags of interest.
 ```python
 >>> osm = OpenStreetMap(feature_query_values={'natural=tree': ('node', '"natural"="tree"')})

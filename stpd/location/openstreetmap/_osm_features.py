@@ -1,5 +1,15 @@
 from typing import Dict, List, Tuple, Union
 
+DEFAULT_FEATURE_NAMES = [
+    'natural=tree',
+    'natural=water',
+    'building=yes',
+    'building=house',
+    'amenity=parking',
+    'amenity=restaurant',
+    'service=driveway',
+]
+
 FEATURES: Dict[str, Tuple[Union[str, List[str]], str]] = {
     # https://taginfo.openstreetmap.org/
     # feature_name: (elementType, selector)

@@ -3,8 +3,8 @@ from datetime import date
 import numpy as np
 import pytest
 
-from stpd import NOAA, ClimateWeatherGC, OpenStreetMap, SimpleMaps
-from stpd.openstreetmap._osm_features import FEATURES as OSM_FEATURES
+from stpd.location import OpenStreetMap, OSMFeatures, SimpleMaps
+from stpd.weather import NOAA, ClimateWeatherGC
 
 # Toronto
 LAT = 43.6534817
@@ -29,12 +29,19 @@ def test_simplemaps():
 
 
 @pytest.mark.parametrize(
-    'feature_name',
+    'feature_names',
     [
-        pytest.param(n, id=n)
-        for n in np.random.choice(list(OSM_FEATURES.keys()), size=5, replace=False)
+        pytest.param(None, id='default')
+    ] + [
+        pytest.param([n], id=n)
+        for n in np.random.choice(list(OSMFeatures.keys()), size=5, replace=False)
     ]
 )
-def test_openstreemap(feature_name):
-    osm = OpenStreetMap(feature_names=[feature_name])
+def test_openstreemap(feature_names):
+    osm = OpenStreetMap(feature_names=feature_names)
+    osm.get_features(LAT, LON)
+
+
+def test_openstreetmap_feature_query_values():
+    osm = OpenStreetMap(feature_query_values={'natural=tree': ('node', '"natural"="tree"')})
     osm.get_features(LAT, LON)

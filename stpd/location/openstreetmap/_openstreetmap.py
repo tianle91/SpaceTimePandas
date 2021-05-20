@@ -6,7 +6,7 @@ import pandas as pd
 from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
-from ._osm_features import FEATURES
+from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
 
 OVERPASS = Overpass()
 
@@ -38,7 +38,7 @@ def get_count_around(
         selector=selector,
         out='count'
     )
-    result = OVERPASS.query(query)
+    result = OVERPASS.query(query, timeout=30)
     return result.countElements()
 
 
@@ -55,27 +55,27 @@ class OpenStreetMap:
     ):
         """
         Args:
-            feature_names: names of features in FEATURES
+            feature_names: names of features in FEATURES. I
             feature_query_values: dict of feature_name to (elementType, selector), like in FEATURES.
                 These are passed into overpassQueryBuilder.
         """
-        if (feature_names is None) and (feature_query_values is None):
-            raise ValueError('Some features need to be set.')
-        if feature_names is None:
-            feature_names = []
-        self.feature_names = feature_names
+        if feature_query_values is None and feature_names is None:
+            feature_names = DEFAULT_FEATURE_NAMES
+            feature_query_values = {}
         if feature_query_values is None:
             feature_query_values = {}
-        self.feature_query_values = feature_query_values
+        if feature_names is None:
+            feature_names = []
+        self.selected_features = feature_query_values
+        self.selected_features.update({
+            feature_name: FEATURES[feature_name]
+            for feature_name in feature_names
+        })
 
     def get_features(self, lat, lon, radius_km=1.):
         all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
-        selected_features = {
-            **{feature_name: FEATURES[feature_name] for feature_name in self.feature_names},
-            **self.feature_query_values
-        }
-        for feature_name in selected_features:
-            elementType, selector = selected_features[feature_name]
+        for feature_name, v in self.selected_features.items():
+            elementType, selector = v
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
                     row['target_lat'],
