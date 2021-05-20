@@ -1,9 +1,10 @@
 from datetime import date, datetime
 from io import StringIO
+from typing import List, Optional
 
-import numpy as np
 import pandas as pd
 import requests
+from geopy import distance
 from pytz import timezone
 
 from .base import BaseWeather
@@ -37,10 +38,21 @@ INVENTORY_DF = INVENTORY_DF.rename(columns=INVENTORY_COLNAMES)
 DEFAULT_ELEMENTS = ('PRCP', 'SNOW', 'SNWD', 'TMAX', 'TMIN')
 
 
-def get_closest_valid_station_id(lat: float, lon: float, dt: date, elements=None) -> str:
+def get_closest_valid_station_id(
+    lat: float,
+    lon: float,
+    dt: date,
+    elements: Optional[List[str]] = None,
+    exclude_ids: Optional[List[str]] = None
+) -> str:
     if elements is None:
         elements = DEFAULT_ELEMENTS
+        exclude_ids = []
     station_inventory = INVENTORY_DF.copy()
+    if exclude_ids is not None:
+        for id in exclude_ids:
+            station_inventory = station_inventory.loc[station_inventory['ID'] != id]
+        station_inventory = station_inventory.reset_index(drop=True)
     station_inventory = station_inventory.loc[
         (station_inventory['FIRSTYEAR'] <= dt.year)
         & (dt.year <= station_inventory['LASTYEAR'])
@@ -55,9 +67,10 @@ def get_closest_valid_station_id(lat: float, lon: float, dt: date, elements=None
     )]
     latcol, loncol = 'LATITUDE', 'LONGITUDE'
     station_inventory['distance'] = station_inventory.apply(
-        lambda row: float(np.linalg.norm(
-            np.array([row[latcol], row[loncol]]) - np.array([lat, lon])
-        )),
+        lambda row: distance.distance(
+            (row[latcol], row[loncol]),
+            (lat, lon)
+        ).km,
         axis=1
     )
     return station_inventory.sort_values('distance').iloc[0]['ID']
@@ -95,9 +108,9 @@ class NOAA(BaseWeather):
 
     def get_historical_single_date(self, dt: date) -> pd.DataFrame:
         elements = self.kwargs.get('elements', None)
-        station_id = get_closest_valid_station_id(self.lat, self.lon, dt, elements=elements)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
+        station_id = get_closest_valid_station_id(self.lat, self.lon, dt, elements=elements)
         # format request
         dt_str = dt.strftime('%Y-%m-%d')
         url = (

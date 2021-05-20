@@ -1,13 +1,12 @@
 from datetime import date, datetime
 from io import StringIO
 
-import numpy as np
 import pandas as pd
 import requests
+from geopy import distance
 from pytz import timezone
 
 from .base import BaseWeather
-
 
 DAILY_DF_DTYPES = {
     "Longitude (x)": float,
@@ -66,9 +65,10 @@ def get_closest_valid_station_id(lat: float, lon: float, dt: date) -> str:
     ]
     latcol, loncol = 'Latitude (Decimal Degrees)', 'Longitude (Decimal Degrees)'
     station_inventory['distance'] = station_inventory.apply(
-        lambda row: float(np.linalg.norm(
-            np.array([row[latcol], row[loncol]]) - np.array([lat, lon])
-        )),
+        lambda row: distance.distance(
+            (row[latcol], row[loncol]),
+            (lat, lon)
+        ).km,
         axis=1
     )
     return station_inventory.sort_values('distance').iloc[0]['Station ID']
