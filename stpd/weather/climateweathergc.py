@@ -8,37 +8,39 @@ from pytz import timezone
 
 from .base import BaseWeather
 
-HOURLY_DF_DTYPES = {
-    'Longitude (x)': float,
-    'Latitude (y)': float,
-    'Station Name': str,
-    'Climate ID': str,
-    'Date/Time (LST)': str,
-    'Year': int,
-    'Month': int,
-    'Day': int,
-    'Time (LST)': str,
-    'Temp (°C)': float,
-    'Temp Flag': str,
-    'Dew Point Temp (°C)': float,
-    'Dew Point Temp Flag': str,
-    'Rel Hum (%)': float,
-    'Rel Hum Flag': str,
-    'Precip. Amount (mm)': float,
-    'Precip. Amount Flag': str,
-    'Wind Dir (10s deg)': float,
-    'Wind Dir Flag': str,
-    'Wind Spd (km/h)': float,
-    'Wind Spd Flag': str,
-    'Visibility (km)': float,
-    'Visibility Flag': str,
-    'Stn Press (kPa)': float,
-    'Stn Press Flag': str,
-    'Hmdx': str,
-    'Hmdx Flag': str,
-    'Wind Chill': str,
-    'Wind Chill Flag': str,
-    'Weather': str
+
+DAILY_DF_DTYPES = {
+    "Longitude (x)": float,
+    "Latitude (y)": float,
+    "Station Name": str,
+    "Climate ID": str,
+    "Date/Time": str,
+    "Year": int,
+    "Month": int,
+    "Day": int,
+    "Data Quality": float,
+    "Max Temp (°C)": float,
+    "Max Temp Flag": str,
+    "Min Temp (°C)": float,
+    "Min Temp Flag": str,
+    "Mean Temp (°C)": float,
+    "Mean Temp Flag": str,
+    "Heat Deg Days (°C)": float,
+    "Heat Deg Days Flag": str,
+    "Cool Deg Days (°C)": float,
+    "Cool Deg Days Flag": str,
+    "Total Rain (mm)": float,
+    "Total Rain Flag": str,
+    "Total Snow (cm)": float,
+    "Total Snow Flag": str,
+    "Total Precip (mm)": float,
+    "Total Precip Flag": str,
+    "Snow on Grnd (cm)": float,
+    "Snow on Grnd Flag": str,
+    "Dir of Max Gust (10s deg)": float,
+    "Dir of Max Gust Flag": str,
+    "Spd of Max Gust (km/h)": str,
+    "Spd of Max Gust Flag": str,
 }
 
 # https://drive.google.com/drive/folders/1WJCDEU34c60IfOnG4rv5EPZ4IhhW9vZH
@@ -73,17 +75,13 @@ def get_closest_valid_station_id(lat: float, lon: float, dt: date) -> str:
 
 
 def format_df(request_text: str, default_tzstr='US/Eastern') -> pd.DataFrame:
-    df = pd.read_csv(StringIO(request_text), dtype=HOURLY_DF_DTYPES)
+    df = pd.read_csv(StringIO(request_text), dtype=DAILY_DF_DTYPES)
 
     def format_datetime(dtstr: str) -> datetime:
-        try:
-            dt = datetime.strptime(dtstr, '%Y-%m-%d %H:%M:%S%z')
-        except ValueError:
-            dt = datetime.strptime(dtstr, '%Y-%m-%d %H:%M')
-            dt = timezone(default_tzstr).localize(dt)
+        dt = datetime.strptime(dtstr, '%Y-%m-%d')
         return dt.astimezone(timezone(default_tzstr))
 
-    df['dt'] = df['Date/Time (LST)'].apply(format_datetime)
+    df['dt'] = df['Date/Time'].apply(format_datetime)
     return df
 
 
@@ -100,7 +98,7 @@ class ClimateWeatherGC(BaseWeather):
         url = (
             'https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&'
             f'stationID={station_id}&Year={dt.year}&Month={dt.month}&Day={dt.day}'
-            '&timeframe=1&submit=Download+Data'
+            '&timeframe=2&submit=Download+Data'
         )
         response_text = requests.get(url).text
         try:
