@@ -100,9 +100,13 @@ class NOAA(BaseWeather):
             raise ValueError(f'No data available for {dt} >= {date.today()}')
         # format request
         dt_str = dt.strftime('%Y-%m-%d')
-        response_json = requests.get(
+        url = (
             'https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries'
             f'&stations={station_id}&startDate={dt_str}&endDate={dt_str}'
             '&format=json'
-        ).json()
-        return format_df(response_json, tzstr=self.tz)
+        )
+        response_json = requests.get(url).json()
+        try:
+            return format_df(response_json, tzstr=self.tz)
+        except Exception as e:
+            raise ValueError(f'url:\n{url}\nresponse_json:\n{response_json}')
