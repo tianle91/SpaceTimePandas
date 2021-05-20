@@ -97,9 +97,13 @@ class ClimateWeatherGC(BaseWeather):
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
         # format request
-        response_text = requests.get(
+        url = (
             'https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&'
             f'stationID={station_id}&Year={dt.year}&Month={dt.month}&Day={dt.day}'
             '&timeframe=1&submit=Download+Data'
-        ).text
-        return format_df(response_text, default_tzstr=self.tz)
+        )
+        response_text = requests.get(url).text
+        try:
+            return format_df(response_text, default_tzstr=self.tz)
+        except Exception:
+            raise ValueError(f'url:\n{url}\nresponse_text:\n{response_text}')
