@@ -108,5 +108,5 @@ class NOAA(BaseWeather):
         response_json = requests.get(url).json()
         try:
             return format_df(response_json, tzstr=self.tz)
-        except Exception as e:
+        except Exception:
             raise ValueError(f'url:\n{url}\nresponse_json:\n{response_json}')
