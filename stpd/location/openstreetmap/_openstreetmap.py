@@ -6,6 +6,8 @@ import pandas as pd
 from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
+from stpd.location.base import BaseLocation
+
 from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
 
 OVERPASS = Overpass()
@@ -42,7 +44,7 @@ def get_count_around(
     return result.countElements()
 
 
-class OpenStreetMap:
+class OpenStreetMap(BaseLocation):
     """
     https://wiki.openstreetmap.org/
     https://github.com/mocnik-science/osm-python-tools

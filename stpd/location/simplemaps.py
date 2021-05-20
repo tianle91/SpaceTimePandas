@@ -6,6 +6,9 @@ from zipfile import ZipFile
 import numpy as np
 import pandas as pd
 import requests
+from geopy import distance
+
+from stpd.location.base import BaseLocation
 
 
 def extract_zip(input_zip: TextIOWrapper) -> Dict[str, str]:
@@ -41,7 +44,7 @@ def euclidean_distance(xy1, xy2):
     return float(np.linalg.norm(np.array(xy1) - np.array(xy2)))
 
 
-class SimpleMaps:
+class SimpleMaps(BaseLocation):
     """
     https://simplemaps.com/data/world-cities
     """
@@ -52,10 +55,10 @@ class SimpleMaps:
             'target_lon': [lon],
         }, dtype=float).merge(WORLDCITIES, how='cross')
         all_df['distance'] = all_df.apply(
-            lambda row: euclidean_distance(
+            lambda row: distance.distance(
                 (row['lat'], row['lng']),
                 (row['target_lat'], row['target_lon'])
-            ),
+            ).km,
             axis=1
         )
         out_rows = []
