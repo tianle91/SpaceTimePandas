@@ -1,3 +1,4 @@
+import logging
 from datetime import date, datetime
 from io import StringIO
 from typing import List, Optional
@@ -8,6 +9,8 @@ from geopy import distance
 from pytz import timezone
 
 from .base import BaseWeather
+
+logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------------------------------
 # INVENTORY_DF
@@ -38,21 +41,17 @@ INVENTORY_DF = INVENTORY_DF.rename(columns=INVENTORY_COLNAMES)
 DEFAULT_ELEMENTS = ('PRCP', 'SNOW', 'SNWD', 'TMAX', 'TMIN')
 
 
-def get_closest_valid_station_id(
+def get_closest_valid_station_ids(
     lat: float,
     lon: float,
     dt: date,
     elements: Optional[List[str]] = None,
-    exclude_ids: Optional[List[str]] = None
-) -> str:
+) -> pd.Series:
+    """Return station ids reported to be active at dt by ghncd-inventory.txt, closest first.
+    """
     if elements is None:
         elements = DEFAULT_ELEMENTS
-        exclude_ids = []
     station_inventory = INVENTORY_DF.copy()
-    if exclude_ids is not None:
-        for id in exclude_ids:
-            station_inventory = station_inventory.loc[station_inventory['ID'] != id]
-        station_inventory = station_inventory.reset_index(drop=True)
     station_inventory = station_inventory.loc[
         (station_inventory['FIRSTYEAR'] <= dt.year)
         & (dt.year <= station_inventory['LASTYEAR'])
@@ -73,7 +72,7 @@ def get_closest_valid_station_id(
         ).km,
         axis=1
     )
-    return station_inventory.sort_values('distance').iloc[0]['ID']
+    return station_inventory.sort_values('distance')['ID']
 
 
 DAILY_DTYPES = {
@@ -110,16 +109,20 @@ class NOAA(BaseWeather):
         elements = self.kwargs.get('elements', None)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
-        station_id = get_closest_valid_station_id(self.lat, self.lon, dt, elements=elements)
-        # format request
-        dt_str = dt.strftime('%Y-%m-%d')
-        url = (
-            'https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries'
-            f'&stations={station_id}&startDate={dt_str}&endDate={dt_str}'
-            '&format=json'
-        )
-        response_json = requests.get(url).json()
-        try:
-            return format_df(response_json, tzstr=self.tz)
-        except Exception:
-            raise ValueError(f'url:\n{url}\nresponse_json:\n{response_json}')
+        closest_valid_stations = get_closest_valid_station_ids(
+            self.lat, self.lon, dt, elements=elements)
+        for station_id in closest_valid_stations:
+            # format request
+            dt_str = dt.strftime('%Y-%m-%d')
+            url = (
+                'https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries'
+                f'&stations={station_id}&startDate={dt_str}&endDate={dt_str}'
+                '&format=json'
+            )
+            response_json = requests.get(url).json()
+            if len(response_json) > 0:
+                return format_df(response_json, tzstr=self.tz)
+            else:
+                # NOAA inventory is accurate
+                logger.warn(f'No data available for station_id: {station_id} at {dt}')
+        raise ValueError(f'No data available for {dt}')
