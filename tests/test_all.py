@@ -15,12 +15,12 @@ END_DATE = date(2021, 5, 9)
 
 def test_noaa():
     noaa = NOAA(LAT, LON)
-    noaa.get_historical(START_DATE, END_DATE)
+    noaa.get_features(START_DATE)
 
 
 def test_cwgc():
     cwgc = ClimateWeatherGC(LAT, LON)
-    cwgc.get_historical(START_DATE, END_DATE)
+    cwgc.get_features(START_DATE)
 
 
 def test_simplemaps():
