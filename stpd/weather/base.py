@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Union
 
 import pandas as pd
@@ -58,23 +58,4 @@ class BaseWeather:
             df
             .merge(res_df, on=['dt'], how='left')
             .drop(columns=['dt'])
-        )
-
-    def get_historical(
-        self, start_date: date, end_date: date, partial_ok: bool = False
-    ) -> pd.DataFrame:
-        res_l = []
-        for n in range((end_date - start_date).days + 1):
-            dt = start_date + timedelta(days=n)
-            df = self.get_features(dt)
-            df = filter_single_date(df, dt=dt)
-            self.validate_get_features(df)
-            if len(df) == 0 and not partial_ok:
-                raise ValueError(f'{dt} has no data {df}')
-            res_l.append(df)
-        return (
-            pd.concat(res_l, axis=0)
-            .drop_duplicates()
-            .sort_values('dt')
-            .reset_index(drop=True)
         )
