@@ -13,6 +13,7 @@ class BaseLocation:
     def add_features_to_df(
         self, df: pd.DataFrame, lat_col: str, lon_col: str
     ) -> pd.DataFrame:
+        df = df.copy()
         res_l = []
         for _, row in df[[lat_col, lon_col]].drop_duplicates().iterrows():
             single_location_feature = self.get_features(lat=row[lat_col], lon=row[lon_col])
