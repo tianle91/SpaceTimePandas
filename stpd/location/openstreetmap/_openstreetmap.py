@@ -54,6 +54,7 @@ class OpenStreetMap(BaseLocation):
         self,
         feature_names: Optional[List[str]] = None,
         feature_query_values: Optional[Dict[str, tuple]] = None,
+        radius_km=1.
     ):
         """
         Args:
@@ -73,8 +74,9 @@ class OpenStreetMap(BaseLocation):
             feature_name: FEATURES[feature_name]
             for feature_name in feature_names
         })
+        self.radius_km = radius_km
 
-    def get_features(self, lat, lon, radius_km=1.):
+    def get_features(self, lat, lon, ):
         all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
         for feature_name, v in self.selected_features.items():
             elementType, selector = v
@@ -84,7 +86,7 @@ class OpenStreetMap(BaseLocation):
                     row['target_lon'],
                     elementType=elementType,
                     selector=selector,
-                    radius_km=radius_km
+                    radius_km=self.radius_km
                 ),
                 axis=1
             )
