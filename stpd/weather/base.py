@@ -23,10 +23,10 @@ class BaseWeather:
         self.tz = TZFINDER.timezone_at(lng=lon, lat=lat)
         self.kwargs = kwargs
 
-    def get_historical_single_date(self, dt: date) -> pd.DataFrame:
+    def get_features(self, dt: date) -> pd.DataFrame:
         raise NotImplementedError
 
-    def _validate_df(self, df: pd.DataFrame):
+    def validate_get_features(self, df: pd.DataFrame):
         if not is_datetime64_any_dtype(df.dtypes['dt']):
             raise TypeError(f'dt column: {df.dtypes["dt"]}, is not datetime64')
 
@@ -36,9 +36,9 @@ class BaseWeather:
         res_l = []
         for n in range((end_date - start_date).days + 1):
             dt = start_date + timedelta(days=n)
-            df = self.get_historical_single_date(dt)
+            df = self.get_features(dt)
             df = filter_single_date(df, dt=dt)
-            self._validate_df(df)
+            self.validate_get_features(df)
             if len(df) == 0 and not partial_ok:
                 raise ValueError(f'{dt} has no data {df}')
             res_l.append(df)

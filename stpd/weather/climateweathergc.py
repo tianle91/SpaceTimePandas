@@ -90,7 +90,7 @@ class ClimateWeatherGC(BaseWeather):
     climate.weather.gc.ca
     """
 
-    def get_historical_single_date(self, dt: date) -> pd.DataFrame:
+    def get_features(self, dt: date) -> pd.DataFrame:
         station_id = get_closest_valid_station_id(self.lat, self.lon, dt)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')

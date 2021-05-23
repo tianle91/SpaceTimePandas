@@ -105,7 +105,7 @@ class NOAA(BaseWeather):
     https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation
     """
 
-    def get_historical_single_date(self, dt: date) -> pd.DataFrame:
+    def get_features(self, dt: date) -> pd.DataFrame:
         elements = self.kwargs.get('elements', None)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
