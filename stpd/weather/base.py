@@ -25,31 +25,38 @@ class BaseWeather:
         raise NotImplementedError
 
     def validate_get_features(self, df: pd.DataFrame):
+        for c in ['target_lat', 'target_lon']:
+            if c not in df.columns:
+                raise KeyError(f'{c} not in df.columns')
         if not is_datetime64_any_dtype(df.dtypes['dt']):
             raise TypeError(f'dt column: {df.dtypes["dt"]}, is not datetime64')
 
     def add_features_to_df(
-        self, df: pd.DataFrame, date_col: str
+        self, df: pd.DataFrame, date_col: str, lat_col: str, lon_col: str
     ) -> pd.DataFrame:
-        df = df.copy()
         if not all([isinstance(v, date) for v in df[date_col].unique()]):
             raise ValueError('Only dates supported')
+        df = df.copy()
         res_l = []
-        for dt in df[date_col].unique():
-            single_date_feature = self.get_features(dt)
+        for _, row in df[[lat_col, lon_col, date_col]].drop_duplicates().iterrows():
+            single_date_feature = self.get_features(
+                dt=row[date_col], lat=row[lat_col], lon=row[lon_col])
             self.validate_get_features(single_date_feature)
             res_l.append(single_date_feature)
         res_df = pd.concat(res_l, axis=0).reset_index(drop=True)
         # res_df needs to have single row per unique date
         res_df['dt'] = res_df['dt'].apply(to_date)
-        res_df = res_df.groupby('dt').agg({
+        join_cols = ['target_lat', 'target_lon', 'dt']
+        res_df = res_df.groupby(join_cols).agg({
             c: 'mean' if is_numeric_dtype(res_df.dtypes[c]) else 'first'
-            for c in res_df.columns
-        }).reset_index(drop=True)
+            for c in res_df.columns if c not in join_cols
+        }).reset_index()
         # for joining purposes
         df['dt'] = df[date_col]
+        df['target_lat'] = df[lat_col]
+        df['target_lon'] = df[lon_col]
         return (
             df
-            .merge(res_df, on=['dt'], how='left')
-            .drop(columns=['dt'])
+            .merge(res_df, on=join_cols, how='left')
+            .drop(columns=join_cols)
         )
