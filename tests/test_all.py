@@ -14,13 +14,13 @@ END_DATE = date(2021, 5, 9)
 
 
 def test_noaa():
-    noaa = NOAA(LAT, LON)
-    noaa.get_features(START_DATE)
+    noaa = NOAA()
+    noaa.get_features(dt=START_DATE, lat=LAT, lon=LON)
 
 
 def test_cwgc():
-    cwgc = ClimateWeatherGC(LAT, LON)
-    cwgc.get_features(START_DATE)
+    cwgc = ClimateWeatherGC()
+    cwgc.get_features(dt=START_DATE, lat=LAT, lon=LON)
 
 
 def test_simplemaps():
