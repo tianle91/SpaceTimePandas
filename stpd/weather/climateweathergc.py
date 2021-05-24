@@ -5,9 +5,9 @@ import pandas as pd
 import requests
 from geopy import distance
 from pytz import timezone
+from timezonefinder import TimezoneFinder
 
 from .base import BaseWeather
-from timezonefinder import TimezoneFinder
 
 TZFINDER = TimezoneFinder()
 
