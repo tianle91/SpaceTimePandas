@@ -125,7 +125,10 @@ class NOAA(BaseWeather):
             )
             response_json = requests.get(url).json()
             if len(response_json) > 0:
-                return format_df(response_json, tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
+                df = format_df(response_json, tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
+                df['target_lat'] = lat
+                df['target_lon'] = lon
+                return df
             else:
                 # NOAA inventory is accurate
                 logger.warn(f'No data available for station_id: {station_id} at {dt}')

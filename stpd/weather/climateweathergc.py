@@ -105,6 +105,9 @@ class ClimateWeatherGC(BaseWeather):
         )
         response_text = requests.get(url).text
         try:
-            return format_df(response_text, default_tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
+            df = format_df(response_text, default_tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
+            df['target_lat'] = lat
+            df['target_lon'] = lon
+            return df
         except Exception:
             raise ValueError(f'url:\n{url}\nresponse_text:\n{response_text}')
