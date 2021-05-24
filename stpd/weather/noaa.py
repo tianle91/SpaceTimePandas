@@ -9,6 +9,8 @@ from geopy import distance
 from pytz import timezone
 from timezonefinder import TimezoneFinder
 
+from stpd.constants import TARGET_DATE_COL, TARGET_LAT_COL, TARGET_LON_COL
+
 from .base import BaseWeather
 
 TZFINDER = TimezoneFinder()
@@ -95,7 +97,7 @@ def format_df(response_json, tzstr) -> pd.DataFrame:
         return dt
 
     df = pd.DataFrame(response_json)
-    df['dt'] = df['DATE'].apply(get_localized_datetime)
+    df[TARGET_DATE_COL] = df['DATE'].apply(get_localized_datetime)
     df = df.drop(columns=['DATE'])
     df = df.astype({c: DAILY_DTYPES[c] for c in df.columns if c in DAILY_DTYPES})
     return df
@@ -126,8 +128,8 @@ class NOAA(BaseWeather):
             response_json = requests.get(url).json()
             if len(response_json) > 0:
                 df = format_df(response_json, tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
-                df['target_lat'] = lat
-                df['target_lon'] = lon
+                df[TARGET_LAT_COL] = lat
+                df[TARGET_LON_COL] = lon
                 return df
             else:
                 # NOAA inventory is accurate

@@ -7,6 +7,8 @@ from geopy import distance
 from pytz import timezone
 from timezonefinder import TimezoneFinder
 
+from stpd.constants import TARGET_DATE_COL, TARGET_LAT_COL, TARGET_LON_COL
+
 from .base import BaseWeather
 
 TZFINDER = TimezoneFinder()
@@ -84,7 +86,7 @@ def format_df(request_text: str, default_tzstr='US/Eastern') -> pd.DataFrame:
         dt = datetime.strptime(dtstr, '%Y-%m-%d')
         return dt.astimezone(timezone(default_tzstr))
 
-    df['dt'] = df['Date/Time'].apply(format_datetime)
+    df[TARGET_DATE_COL] = df['Date/Time'].apply(format_datetime)
     return df
 
 
@@ -106,8 +108,8 @@ class ClimateWeatherGC(BaseWeather):
         response_text = requests.get(url).text
         try:
             df = format_df(response_text, default_tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
-            df['target_lat'] = lat
-            df['target_lon'] = lon
+            df[TARGET_LAT_COL] = lat
+            df[TARGET_LON_COL] = lon
             return df
         except Exception:
             raise ValueError(f'url:\n{url}\nresponse_text:\n{response_text}')

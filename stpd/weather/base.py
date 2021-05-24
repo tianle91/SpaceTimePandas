@@ -5,6 +5,8 @@ import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
 from timezonefinder import TimezoneFinder
 
+from stpd.constants import TARGET_DATE_COL, TARGET_LAT_COL, TARGET_LON_COL
+
 TZFINDER = TimezoneFinder()
 
 
@@ -25,11 +27,15 @@ class BaseWeather:
         raise NotImplementedError
 
     def validate_get_features(self, df: pd.DataFrame):
-        for c in ['target_lat', 'target_lon']:
+        for c in [TARGET_LAT_COL, TARGET_LON_COL]:
             if c not in df.columns:
                 raise KeyError(f'{c} not in df.columns')
-        if not is_datetime64_any_dtype(df.dtypes['dt']):
-            raise TypeError(f'dt column: {df.dtypes["dt"]}, is not datetime64')
+        if not is_datetime64_any_dtype(df.dtypes[TARGET_DATE_COL]):
+            raise TypeError(
+                f'TARGET_DATE_COL: {TARGET_DATE_COL}'
+                f' has incorrect type: {df.dtypes[TARGET_DATE_COL]}'
+                'which is not datetime64'
+            )
 
     def add_features_to_df(
         self, df: pd.DataFrame, date_col: str, lat_col: str, lon_col: str
@@ -45,16 +51,16 @@ class BaseWeather:
             res_l.append(single_date_feature)
         res_df = pd.concat(res_l, axis=0).reset_index(drop=True)
         # res_df needs to have single row per unique date
-        res_df['dt'] = res_df['dt'].apply(to_date)
-        join_cols = ['target_lat', 'target_lon', 'dt']
+        res_df[TARGET_DATE_COL] = res_df[TARGET_DATE_COL].apply(to_date)
+        join_cols = [TARGET_LAT_COL, TARGET_LON_COL, TARGET_DATE_COL]
         res_df = res_df.groupby(join_cols).agg({
             c: 'mean' if is_numeric_dtype(res_df.dtypes[c]) else 'first'
             for c in res_df.columns if c not in join_cols
         }).reset_index()
         # for joining purposes
-        df['dt'] = df[date_col]
-        df['target_lat'] = df[lat_col]
-        df['target_lon'] = df[lon_col]
+        df[TARGET_DATE_COL] = df[date_col]
+        df[TARGET_LAT_COL] = df[lat_col]
+        df[TARGET_LON_COL] = df[lon_col]
         return (
             df
             .merge(res_df, on=join_cols, how='left')
