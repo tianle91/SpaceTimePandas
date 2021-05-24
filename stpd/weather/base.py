@@ -21,12 +21,6 @@ def to_date(dt: Union[date, datetime]) -> date:
 
 class BaseWeather:
 
-    def __init__(self, lat, lon, **kwargs):
-        self.lat = lat
-        self.lon = lon
-        self.tz = TZFINDER.timezone_at(lng=lon, lat=lat)
-        self.kwargs = kwargs
-
     def get_features(self, dt: date) -> pd.DataFrame:
         raise NotImplementedError
 

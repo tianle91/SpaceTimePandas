@@ -7,9 +7,11 @@ import pandas as pd
 import requests
 from geopy import distance
 from pytz import timezone
+from timezonefinder import TimezoneFinder
 
 from .base import BaseWeather
 
+TZFINDER = TimezoneFinder()
 logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------------------------------
@@ -105,12 +107,14 @@ class NOAA(BaseWeather):
     https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation
     """
 
-    def get_features(self, dt: date) -> pd.DataFrame:
-        elements = self.kwargs.get('elements', None)
+    def __init__(self, elements=None) -> None:
+        self.elements = elements
+
+    def get_features(self, dt: date, lat: float, lon: float) -> pd.DataFrame:
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
         closest_valid_stations = get_closest_valid_station_ids(
-            self.lat, self.lon, dt, elements=elements)
+            lat=lat, lon=lon, dt=dt, elements=self.elements)
         for station_id in closest_valid_stations:
             # format request
             dt_str = dt.strftime('%Y-%m-%d')
@@ -121,7 +125,7 @@ class NOAA(BaseWeather):
             )
             response_json = requests.get(url).json()
             if len(response_json) > 0:
-                return format_df(response_json, tzstr=self.tz)
+                return format_df(response_json, tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
             else:
                 # NOAA inventory is accurate
                 logger.warn(f'No data available for station_id: {station_id} at {dt}')
