@@ -25,7 +25,7 @@ class Pipeline:
                 df_ft = stage.add_features_to_df(
                     df, date_col=date_col, lat_col=lat_col, lon_col=lon_col)
             df_ft = df_ft.rename(columns={
-                c: stage.__class__.__name__
+                c: f'{stage.__class__.__name__}_{c}'
                 for c in df_ft if c not in df
             })
             res_l.append(df_ft)
