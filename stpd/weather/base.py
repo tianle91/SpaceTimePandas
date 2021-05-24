@@ -21,7 +21,7 @@ def to_date(dt: Union[date, datetime]) -> date:
 
 class BaseWeather:
 
-    def get_features(self, dt: date) -> pd.DataFrame:
+    def get_features(self, dt: date, lat: float, lon: float) -> pd.DataFrame:
         raise NotImplementedError
 
     def validate_get_features(self, df: pd.DataFrame):
