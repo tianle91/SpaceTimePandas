@@ -14,39 +14,39 @@ pip install SpaceTimePandas
 See also [demo_climate.ipynb](demo_climate.ipynb).
 ```python
 >>> df
-         date
-0  2020-01-01
-1  2020-01-02
+         lat        lon        date
+0  43.653482 -79.383935  2020-01-01
+1  43.653482 -79.383935  2020-01-02
 ```
 
 `NOAA` provides climate data from a huge variety of weather stations.
 See [ghcnd-inventory.txt](https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt).
 ```python
 >>> from stpd.weather import NOAA
->>> noaa = NOAA(lat, lon)
->>> noaa.add_features_to_df(df, date_col='date')
-         date      STATION  TMAX  TMIN   TOBS
-0  2020-01-01  USC00309690  83.0  -6.0     -6
-1  2020-01-02  USC00309690  44.0 -11.0     44
+>>> noaa = NOAA()
+>>> noaa.add_features_to_df(df, date_col='date', lat_col='lat', lon_col='lon')
+         lat        lon        date      STATION  TMAX  TMIN   TOBS
+0  43.653482 -79.383935  2020-01-01  USC00309690  83.0  -6.0     -6
+1  43.653482 -79.383935  2020-01-02  USC00309690  44.0 -11.0     44
 ```
 
 `climate.weather.gc.ca` collects data from Canadian weather stations.
 It has more complete weather information compared to `NOAA`.
 ```python
 >>> from stpd.weather import ClimateWeatherGC
->>> cwgc = ClimateWeatherGC(lat, lon)
->>> cwgc.add_features_to_df(df, date_col='date')
-         date  Longitude (x)  Latitude (y)  Station Name Climate ID  \
-0  2020-01-01          -79.4         43.67  TORONTO CITY    6158355   
-1  2020-01-02          -79.4         43.67  TORONTO CITY    6158355   
+>>> cwgc = ClimateWeatherGC()
+>>> cwgc.add_features_to_df(df, date_col='date', lat_col='lat', lon_col='lon')
+         lat        lon        date  Longitude (x)  Latitude (y)  \
+0  43.653482 -79.383935  2020-01-01          -79.4         43.67   
+1  43.653482 -79.383935  2020-01-02          -79.4         43.67   
 
-    Date/Time  Year  Month  Day  Data Quality  ...  Total Snow (cm)  \
-0  2020-01-02  2020      1    2           NaN  ...              NaN   
-1  2020-01-03  2020      1    3           NaN  ...              NaN   
+   Station Name Climate ID   Date/Time  Year  Month  ...  Total Snow (cm)  \
+0  TORONTO CITY    6158355  2020-01-02  2020      1  ...              NaN   
+1  TORONTO CITY    6158355  2020-01-03  2020      1  ...              NaN   
 
-  Total Snow Flag  Total Precip (mm) Total Precip Flag  Snow on Grnd (cm)  \
-0            None                0.0              None                1.0   
-1            None                0.0              None                1.0   
+   Total Snow Flag  Total Precip (mm) Total Precip Flag  Snow on Grnd (cm)  \
+0             None                0.0              None                1.0   
+1             None                0.0              None                1.0   
 
   Snow on Grnd Flag  Dir of Max Gust (10s deg) Dir of Max Gust Flag  \
 0              None                        NaN                    M   
