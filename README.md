@@ -1,16 +1,55 @@
 # SpaceTimePandas
-![icon](SpaceTimePandas.png)
-
 Location and date features from a bunch of api sources to Pandas.
 Repository hosted on [GitHub](https://github.com/tianle91/SpaceTimePandas).
 
+![icon](SpaceTimePandas.png)
 ```
 pip install SpaceTimePandas
 ```
 
-# Demo
+# Demo 
+Get a lot of space and time related features!
+See also [demo_pipeline.ipynb](demo_pipeline.ipynb).
+```python
+>>> df
+         lat        lon        date
+0  43.653482 -79.383935  2020-01-01
+1  43.653482 -79.383935  2020-01-02
+```
+Define a collection of features.
+```python
+>>> from stpd.location import OpenStreetMap, SimpleMaps
+>>> from stpd.pipeline import Pipeline
+>>> from stpd.weather import NOAA, ClimateWeatherGC
+>>> p = Pipeline([
+>>>     OpenStreetMap(),
+>>>     SimpleMaps(),
+>>>     NOAA(),
+>>>     ClimateWeatherGC(),
+>>> ])
+>>> features = p.add_features_to_df(df, date_col='date', lat_col='lat', lon_col='lon')
+>>> features.shape
+(2, 66)
+```
+Preview of a single row (column names trunctated).
+```python
+>>> features.iloc[0]
+lat                                            43.653482
+lon                                           -79.383935
+date                                          2020-01-01
+OpenStreetMap_count_natural=tree                     719
+OpenStreetMap_count_natural=water                     15
+                                                 ...    
+ClimateWeatherGC_Snow on Grnd Flag                  None
+ClimateWeatherGC_Dir of Max Gust (10s deg)           NaN
+ClimateWeatherGC_Dir of Max Gust Flag                  M
+ClimateWeatherGC_Spd of Max Gust (km/h)             None
+ClimateWeatherGC_Spd of Max Gust Flag                  M
+Name: 0, Length: 66, dtype: object
+```
+You can of course use the components above individually.
 
-## Weather
+## Weather Features
 See also [demo_weather.ipynb](demo_weather.ipynb).
 ```python
 >>> df
@@ -57,7 +96,7 @@ It has more complete weather information compared to `NOAA`.
 1                    None                    M  
 ```
 
-## Location
+## Location Features
 See also [demo_location.ipynb](demo_location.ipynb).
 ```python
 >>> df
