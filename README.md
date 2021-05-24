@@ -10,8 +10,8 @@ pip install SpaceTimePandas
 
 # Demo
 
-## Climate
-See also [demo_climate.ipynb](demo_climate.ipynb).
+## Weather
+See also [demo_weather.ipynb](demo_weather.ipynb).
 ```python
 >>> df
          lat        lon        date
