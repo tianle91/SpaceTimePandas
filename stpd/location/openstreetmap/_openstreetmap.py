@@ -6,6 +6,7 @@ import pandas as pd
 from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
+from stpd.constants import TARGET_LAT_COL, TARGET_LON_COL
 from stpd.location.base import BaseLocation
 
 from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
@@ -77,13 +78,13 @@ class OpenStreetMap(BaseLocation):
         self.radius_km = radius_km
 
     def get_features(self, lat, lon, ):
-        all_df = pd.DataFrame({'target_lat': [lat], 'target_lon': [lon]})
+        all_df = pd.DataFrame({TARGET_LAT_COL: [lat], TARGET_LON_COL: [lon]})
         for feature_name, v in self.selected_features.items():
             elementType, selector = v
             all_df[f'count_{feature_name}'] = all_df.apply(
                 lambda row: get_count_around(
-                    row['target_lat'],
-                    row['target_lon'],
+                    row[TARGET_LAT_COL],
+                    row[TARGET_LON_COL],
                     elementType=elementType,
                     selector=selector,
                     radius_km=self.radius_km

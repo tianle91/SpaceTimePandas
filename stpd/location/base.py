@@ -1,12 +1,14 @@
 import pandas as pd
 
+from stpd.constants import TARGET_LAT_COL, TARGET_LON_COL
+
 
 class BaseLocation:
     def get_features(self, lat, lon, **kwargs):
         raise NotImplementedError
 
     def validate_get_features(self, df: pd.DataFrame):
-        for c in ['target_lat', 'target_lon']:
+        for c in [TARGET_LAT_COL, TARGET_LON_COL]:
             if c not in df.columns:
                 raise KeyError(f'{c} not in df.columns')
 
@@ -20,10 +22,11 @@ class BaseLocation:
             self.validate_get_features(single_location_feature)
             res_l.append(single_location_feature)
         res_df = pd.concat(res_l, axis=0).reset_index(drop=True)
-        df['target_lat'] = df[lat_col]
-        df['target_lon'] = df[lon_col]
+        df[TARGET_LAT_COL] = df[lat_col]
+        df[TARGET_LON_COL] = df[lon_col]
+        join_cols = [TARGET_LAT_COL, TARGET_LON_COL]
         return (
             df
-            .merge(res_df, on=['target_lat', 'target_lon'], how='left')
-            .drop(columns=['target_lat', 'target_lon'])
+            .merge(res_df, on=join_cols, how='left')
+            .drop(columns=join_cols)
         )

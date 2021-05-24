@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 from geopy import distance
 
+from stpd.constants import TARGET_LAT_COL, TARGET_LON_COL
 from stpd.location.base import BaseLocation
 
 
@@ -50,18 +51,16 @@ class SimpleMaps(BaseLocation):
     """
 
     def get_features(self, lat, lon):
-        all_df = pd.DataFrame({
-            'target_lat': [lat],
-            'target_lon': [lon],
-        }, dtype=float).merge(WORLDCITIES, how='cross')
+        all_df = pd.DataFrame({TARGET_LAT_COL: [lat], TARGET_LON_COL: [lon]})
+        all_df = all_df.merge(WORLDCITIES, how='cross')
         all_df['distance'] = all_df.apply(
             lambda row: distance.distance(
                 (row['lat'], row['lng']),
-                (row['target_lat'], row['target_lon'])
+                (row[TARGET_LAT_COL], row[TARGET_LON_COL])
             ).km,
             axis=1
         )
         out_rows = []
-        for _, subdf in all_df.groupby(['target_lat', 'target_lon']):
+        for _, subdf in all_df.groupby([TARGET_LAT_COL, TARGET_LON_COL]):
             out_rows.append(subdf.loc[subdf['distance'].idxmin()])
         return pd.DataFrame(out_rows).reset_index(drop=True)
