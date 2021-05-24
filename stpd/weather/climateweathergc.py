@@ -7,6 +7,9 @@ from geopy import distance
 from pytz import timezone
 
 from .base import BaseWeather
+from timezonefinder import TimezoneFinder
+
+TZFINDER = TimezoneFinder()
 
 DAILY_DF_DTYPES = {
     "Longitude (x)": float,
@@ -90,8 +93,8 @@ class ClimateWeatherGC(BaseWeather):
     climate.weather.gc.ca
     """
 
-    def get_features(self, dt: date) -> pd.DataFrame:
-        station_id = get_closest_valid_station_id(self.lat, self.lon, dt)
+    def get_features(self, dt: date, lat: float, lon: float) -> pd.DataFrame:
+        station_id = get_closest_valid_station_id(lat=lat, lon=lon, dt=dt)
         if dt >= date.today():
             raise ValueError(f'No data available for {dt} >= {date.today()}')
         # format request
@@ -102,6 +105,6 @@ class ClimateWeatherGC(BaseWeather):
         )
         response_text = requests.get(url).text
         try:
-            return format_df(response_text, default_tzstr=self.tz)
+            return format_df(response_text, default_tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
         except Exception:
             raise ValueError(f'url:\n{url}\nresponse_text:\n{response_text}')
