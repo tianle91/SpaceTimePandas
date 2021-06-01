@@ -9,7 +9,10 @@ pip install SpaceTimePandas
 
 # Demo 
 Get a lot of space and time related features!
-See also [demo_pipeline.ipynb](demo_pipeline.ipynb).
+See also 
+[demo_pipeline.ipynb](demo_pipeline.ipynb)
+or on colab 
+[[SpaceTimePandas] demo_pipeline.ipynb](https://colab.research.google.com/drive/1RdWAMbX8I5VjI7g43JLOwIh94LWEe9sK?usp=sharing)
 ```python
 >>> df
          lat        lon        date
