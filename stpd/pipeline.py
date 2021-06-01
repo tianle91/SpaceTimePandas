@@ -16,7 +16,8 @@ class Pipeline:
     def add_features_to_df(
         self, df: pd.DataFrame, date_col: str, lat_col: str, lon_col: str
     ) -> pd.DataFrame:
-        res_l = []
+        index_cols = [date_col, lat_col, lon_col]
+        res_l = [df[[c for c in index_cols if c in df.columns]]]
         for stage in self.stages:
             if isinstance(stage, BaseLocation):
                 df_ft = stage.add_features_to_df(
@@ -28,5 +29,7 @@ class Pipeline:
                 c: f'{stage.__class__.__name__}_{c}'
                 for c in df_ft if c not in df
             })
-            res_l.append(df_ft)
+            res_l.append(df_ft.drop(columns=[
+                c for c in index_cols if c in df_ft.columns
+            ]))
         return pd.concat(res_l, axis=1)
