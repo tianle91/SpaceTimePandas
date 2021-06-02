@@ -52,10 +52,13 @@ class SimpleMaps(BaseLocation):
 
     def get_features(self, lat, lon):
         all_df = pd.DataFrame({TARGET_LAT_COL: [lat], TARGET_LON_COL: [lon]})
-        all_df = all_df.merge(WORLDCITIES, how='cross')
+        all_df = all_df.merge(WORLDCITIES, how='cross').rename(columns={
+            'lat': 'city_latitude',
+            'lng': 'city_longitude',
+        })
         all_df['distance'] = all_df.apply(
             lambda row: distance.distance(
-                (row['lat'], row['lng']),
+                (row['city_latitude'], row['city_longitude']),
                 (row[TARGET_LAT_COL], row[TARGET_LON_COL])
             ).km,
             axis=1

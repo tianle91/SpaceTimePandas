@@ -109,7 +109,8 @@ class NOAA(BaseWeather):
     https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation
     """
 
-    def __init__(self, elements=None) -> None:
+    def __init__(self, date_col: str, lat_col: str, lon_col: str, elements=None) -> None:
+        super().__init__(date_col, lat_col, lon_col)
         self.elements = elements
 
     def get_features(self, dt: date, lat: float, lon: float) -> pd.DataFrame:
