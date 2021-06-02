@@ -4,17 +4,24 @@ from stpd.constants import TARGET_LAT_COL, TARGET_LON_COL
 
 
 class BaseLocation:
-    def get_features(self, lat, lon, **kwargs):
+    def __init__(self, lat_col: str, lon_col: str) -> None:
+        self.lat_col = lat_col
+        self.lon_col = lon_col
+
+    def get_features(self, lat, lon):
         raise NotImplementedError
 
-    def validate_get_features(self, df: pd.DataFrame):
+    def validate_get_features(self, single_feature_df: pd.DataFrame):
         for c in [TARGET_LAT_COL, TARGET_LON_COL]:
-            if c not in df.columns:
-                raise KeyError(f'{c} not in df.columns')
+            if c not in single_feature_df.columns:
+                raise KeyError(f'{c} not in single_feature_df.columns')
+        for c in [self.lat_col, self.lon_col]:
+            if c in single_feature_df.columns:
+                raise KeyError(f'{c} should not in single_feature_df.columns')
 
-    def add_features_to_df(
-        self, df: pd.DataFrame, lat_col: str, lon_col: str
-    ) -> pd.DataFrame:
+    def add_features_to_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        lat_col = self.lat_col
+        lon_col = self.lon_col
         df = df.copy()
         res_l = []
         for _, row in df[[lat_col, lon_col]].drop_duplicates().iterrows():
