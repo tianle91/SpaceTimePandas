@@ -11,20 +11,23 @@ def get_lat_lon(s: str, nom: Nominatim = nominatim) -> Tuple[float, float]:
     return float(best_match['lat']), float(best_match['lon'])
 
 
-def add_lat_lon_to_df(
-    df: pd.DataFrame, location_name_column='location_name'
-) -> pd.DataFrame:
-    geocoded_mapping = {
-        n: get_lat_lon(n)
-        for n in df[location_name_column].unique()
-    }
-    geocoded_df = pd.DataFrame([
-        {
-            location_name_column: k,
-            'latitude': v[0],
-            'longitude': v[1],
+class GeoCode:
+    def __init__(self, location_name_col: str, lat_col: str = 'lat', lon_col: str = 'lon') -> None:
+        self.location_name_col = location_name_col
+        self.lat_col = lat_col
+        self.lon_col = lon_col
+
+    def add_features_to_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        geocoded_mapping = {
+            n: get_lat_lon(n)
+            for n in df[self.location_name_col].unique()
         }
-        for k, v in geocoded_mapping.items()
-    ])
-    return df.merge(
-        geocoded_df, how='left', on=location_name_column)
+        geocoded_df = pd.DataFrame([
+            {
+                self.location_name_col: k,
+                self.lat_col: v[0],
+                self.lon_col: v[1],
+            }
+            for k, v in geocoded_mapping.items()
+        ])
+        return df.merge(geocoded_df, how='left', on=self.location_name_col)
