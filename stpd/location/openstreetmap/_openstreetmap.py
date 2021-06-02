@@ -53,16 +53,19 @@ class OpenStreetMap(BaseLocation):
 
     def __init__(
         self,
+        lat_col: str,
+        lon_col: str,
         feature_names: Optional[List[str]] = None,
         feature_query_values: Optional[Dict[str, tuple]] = None,
         radius_km=1.
-    ):
+    ) -> None:
         """
         Args:
-            feature_names: names of features in FEATURES. I
-            feature_query_values: dict of feature_name to (elementType, selector), like in FEATURES.
+            feature_names: names of features in stpd.location.OSMFeatures
+            feature_query_values: dict of feature_name to (elementType, selector).
                 These are passed into overpassQueryBuilder.
         """
+        super().__init__(lat_col, lon_col)
         if feature_query_values is None and feature_names is None:
             feature_names = DEFAULT_FEATURE_NAMES
             feature_query_values = {}
@@ -77,7 +80,7 @@ class OpenStreetMap(BaseLocation):
         })
         self.radius_km = radius_km
 
-    def get_features(self, lat, lon, ):
+    def get_features(self, lat, lon):
         all_df = pd.DataFrame({TARGET_LAT_COL: [lat], TARGET_LON_COL: [lon]})
         for feature_name, v in self.selected_features.items():
             elementType, selector = v

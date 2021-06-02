@@ -22,24 +22,32 @@ def to_date(dt: Union[date, datetime]) -> date:
 
 
 class BaseWeather:
+    def __init__(self, date_col: str, lat_col: str, lon_col: str) -> None:
+        self.date_col = date_col
+        self.lat_col = lat_col
+        self.lon_col = lon_col
 
     def get_features(self, dt: date, lat: float, lon: float) -> pd.DataFrame:
         raise NotImplementedError
 
-    def validate_get_features(self, df: pd.DataFrame):
+    def validate_get_features(self, single_feature_df: pd.DataFrame):
         for c in [TARGET_LAT_COL, TARGET_LON_COL]:
-            if c not in df.columns:
-                raise KeyError(f'{c} not in df.columns')
-        if not is_datetime64_any_dtype(df.dtypes[TARGET_DATE_COL]):
+            if c not in single_feature_df.columns:
+                raise KeyError(f'{c} not in single_feature_df.columns')
+        for c in [self.date_col, self.lat_col, self.lon_col]:
+            if c in single_feature_df.columns:
+                raise KeyError(f'{c} should not be in single_feature_df.columns')
+        if not is_datetime64_any_dtype(single_feature_df.dtypes[TARGET_DATE_COL]):
             raise TypeError(
-                f'TARGET_DATE_COL: {TARGET_DATE_COL}'
-                f' has incorrect type: {df.dtypes[TARGET_DATE_COL]}'
+                f'TARGET_DATE_COL: {TARGET_DATE_COL} in single_feature_df'
+                f' has incorrect type: {single_feature_df.dtypes[TARGET_DATE_COL]}'
                 'which is not datetime64'
             )
 
-    def add_features_to_df(
-        self, df: pd.DataFrame, date_col: str, lat_col: str, lon_col: str
-    ) -> pd.DataFrame:
+    def add_features_to_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        date_col = self.date_col
+        lat_col = self.lat_col
+        lon_col = self.lon_col
         if not all([isinstance(v, date) for v in df[date_col].unique()]):
             raise ValueError('Only dates supported')
         df = df.copy()

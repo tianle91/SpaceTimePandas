@@ -9,7 +9,7 @@ LON = -79.3839347
 
 
 def test_simplemaps():
-    sm = SimpleMaps()
+    sm = SimpleMaps(lat_col='lat', lon_col='lon')
     sm.get_features(LAT, LON)
 
 
@@ -23,10 +23,18 @@ def test_simplemaps():
     ]
 )
 def test_openstreemap(feature_names):
-    osm = OpenStreetMap(feature_names=feature_names)
+    osm = OpenStreetMap(
+        lat_col='lat',
+        lon_col='lon',
+        feature_names=feature_names
+    )
     osm.get_features(LAT, LON)
 
 
 def test_openstreetmap_feature_query_values():
-    osm = OpenStreetMap(feature_query_values={'natural=tree': ('node', '"natural"="tree"')})
+    osm = OpenStreetMap(
+        lat_col='lat',
+        lon_col='lon',
+        feature_query_values={'natural=tree': ('node', '"natural"="tree"')}
+    )
     osm.get_features(LAT, LON)
