@@ -5,6 +5,7 @@ from typing import List, Optional
 
 import pandas as pd
 import requests
+import requests_cache
 from geopy import distance
 from pytz import timezone
 from timezonefinder import TimezoneFinder
@@ -13,6 +14,7 @@ from stpd.constants import TARGET_DATE_COL, TARGET_LAT_COL, TARGET_LON_COL
 
 from .base import BaseWeather
 
+session = requests_cache.CachedSession(namespace='noaa')
 TZFINDER = TimezoneFinder()
 logger = logging.getLogger(__name__)
 
@@ -126,7 +128,7 @@ class NOAA(BaseWeather):
                 f'&stations={station_id}&startDate={dt_str}&endDate={dt_str}'
                 '&format=json'
             )
-            response_json = requests.get(url).json()
+            response_json = session.get(url).json()
             if len(response_json) > 0:
                 df = format_df(response_json, tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
                 df[TARGET_LAT_COL] = lat

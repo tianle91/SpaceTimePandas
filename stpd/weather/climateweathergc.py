@@ -3,6 +3,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+import requests_cache
 from geopy import distance
 from pytz import timezone
 from timezonefinder import TimezoneFinder
@@ -11,8 +12,8 @@ from stpd.constants import TARGET_DATE_COL, TARGET_LAT_COL, TARGET_LON_COL
 
 from .base import BaseWeather
 
+session = requests_cache.CachedSession(namespace='climateweathergc')
 TZFINDER = TimezoneFinder()
-
 DAILY_DF_DTYPES = {
     "Longitude (x)": float,
     "Latitude (y)": float,
@@ -105,7 +106,7 @@ class ClimateWeatherGC(BaseWeather):
             f'stationID={station_id}&Year={dt.year}&Month={dt.month}&Day={dt.day}'
             '&timeframe=2&submit=Download+Data'
         )
-        response_text = requests.get(url).text
+        response_text = session.get(url).text
         try:
             df = format_df(response_text, default_tzstr=TZFINDER.timezone_at(lng=lon, lat=lat))
             df[TARGET_LAT_COL] = lat
