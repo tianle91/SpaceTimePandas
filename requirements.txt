@@ -1,4 +1,5 @@
 requests>=2.25.1
+requests-cache==0.6.4
 pandas>=1.2.0
 timezonefinder>=5.2.0
 OSMPythonTools==0.3.0
