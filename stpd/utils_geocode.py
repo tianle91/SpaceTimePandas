@@ -1,10 +1,9 @@
-from typing import Tuple
-
+from geopy import Point
 from OSMPythonTools.nominatim import Nominatim
 
 nominatim = Nominatim()
 
 
-def get_lat_lon(s: str, nom: Nominatim = nominatim) -> Tuple[float, float]:
-    best_match = nom.query(s).toJSON()[0]
-    return float(best_match['lat']), float(best_match['lon'])
+def get_point(location_str: str, nom: Nominatim = nominatim) -> Point:
+    best_match = nom.query(location_str).toJSON()[0]
+    return Point(latitude=best_match['lat'], longitude=best_match['lon'])
