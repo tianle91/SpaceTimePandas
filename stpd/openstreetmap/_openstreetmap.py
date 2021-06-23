@@ -55,7 +55,7 @@ def get_count_around(
     return result.countElements()
 
 
-class OpenStreetMaps:
+class OpenStreetMap:
     """Give location receive features.
     """
 
