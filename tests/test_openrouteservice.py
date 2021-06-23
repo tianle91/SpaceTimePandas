@@ -1,6 +1,7 @@
 import os
 
-from stpd.openrouteservice import OpenRouteServicePathFeatures, OpenRouteServiceLocationFeatures
+from stpd.openrouteservice import (OpenRouteServiceLocationFeatures,
+                                   OpenRouteServicePathFeatures)
 
 
 def test_OpenRouteServicePathFeatures():

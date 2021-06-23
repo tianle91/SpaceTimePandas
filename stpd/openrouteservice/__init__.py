@@ -1,6 +1,7 @@
-from ._openrouteservice import OpenRouteServicePathFeatures, OpenRouteServiceLocationFeatures
+from ._openrouteservice import (OpenRouteServiceLocationFeatures,
+                                OpenRouteServicePathFeatures)
 
 __all__ = [
-    'OpenRouteServicePathFeatures',
     'OpenRouteServiceLocationFeatures',
+    'OpenRouteServicePathFeatures',
 ]
