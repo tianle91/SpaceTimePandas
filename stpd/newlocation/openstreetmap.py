@@ -17,9 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_bounding_box_around(point: Point, radius_km=1.) -> Tuple[float, float, float, float]:
-    """
-    https://stackoverflow.com/questions/24427828/calculate-point-based-on-distance-and-direction
-    """
     center = point
     r = geopy.distance.distance(kilometers=radius_km)
     north: Point = r.destination(point=center, bearing=0)
