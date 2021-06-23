@@ -1,4 +1,5 @@
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple, Union
 
 import geopy
@@ -11,6 +12,8 @@ from stpd.utils_geocode import get_lat_lon
 from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
 
 OVERPASS = Overpass()
+
+logger = logging.getLogger(__name__)
 
 
 def get_bounding_box_around(point: Point, radius_km=1.) -> Tuple[float, float, float, float]:
@@ -47,7 +50,10 @@ def get_count_around(
     # https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#date
     p = {}
     if dt is not None:
-        p.update({'date': f'{dt.isoformat()}Z'})
+        if dt.tzinfo is None:
+            logger.warning(f'No tzinfo provided for dt:{dt}, assuming is UTC.')
+        dt = dt.astimezone(timezone.utc)
+        p.update({'date': f'{dt.isoformat()}'})
     result = OVERPASS.query(query, timeout=60, **p)
     return result.countElements()
 
