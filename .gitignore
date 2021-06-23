@@ -130,6 +130,7 @@ dmypy.json
 
 # os
 .DS_Store
+.Trash-0/*
 
 # cache
 cache/*
