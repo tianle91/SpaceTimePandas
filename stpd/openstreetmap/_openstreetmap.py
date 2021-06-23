@@ -7,7 +7,7 @@ import geopy.distance
 from geopy import Point
 from OSMPythonTools.overpass import Overpass, overpassQueryBuilder
 
-from stpd.utils_geocode import get_lat_lon
+from stpd.utils_geocode import get_point
 
 from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
 
@@ -87,8 +87,7 @@ class OpenStreetMap:
         if point is not None:
             point = point
         elif location_str is not None:
-            lat, lon = get_lat_lon(s=location_str)
-            point = Point(latitude=lat, longitude=lon)
+            point = get_point(location_str)
         else:
             raise ValueError('At least one of location_str or point must be provided!')
         res = {}
