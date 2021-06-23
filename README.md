@@ -18,8 +18,7 @@ pip install SpaceTimePandas
 
 ```python
 >>> from stpd.openrouteservice._openrouteservice import OpenRouteService
->>> with open('ors.secret') as f:
-...    ors = OpenRouteService(f.read())
+>>> ors = OpenRouteService(api_key='<GET-ONE-FROM-OpenRouteService>')
 >>> ors(location_strs=['toronto ontario', 'hamilton ontario'])
 {'distance': 67828.8, 'duration': 3125.3}
 ```
