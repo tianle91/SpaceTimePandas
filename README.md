@@ -17,7 +17,7 @@ pip install SpaceTimePandas
 ```
 
 ```python
->>> from stpd.openrouteservice._openrouteservice import OpenRouteServicePathFeatures
+>>> from stpd.openrouteservice import OpenRouteServicePathFeatures
 >>> ors = OpenRouteServicePathFeatures(api_key='<GET-ONE-FROM-OPENROUTESERVICE>')
 >>> ors(location_strs=['toronto ontario', 'hamilton ontario'])
 {'distance': 67828.8, 'duration': 3125.3}
