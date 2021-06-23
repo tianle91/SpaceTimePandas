@@ -37,6 +37,7 @@ class OpenRouteService:
             raise ValueError('At least one of location_strs or points must be provided!')
         coords = tuple([
             # this is longitude and latitude!
+            # the default example is in germany, not somalia
             (p.longitude, p.latitude) for p in points
         ])
         routes = self.client.directions(coords)
