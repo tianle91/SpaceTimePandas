@@ -73,3 +73,16 @@ Name: 0, dtype: object
 You can of course use the components above individually.
 - Weather features [demo_weather.ipynb](demo_weather.ipynb).
 - Location features [demo_location.ipynb](demo_location.ipynb).
+
+
+----
+# Location features only - possibly historical (NEW!)
+
+Given address or location name, return features related to it.
+- counts of features
+- time to travel from location to ...
+- sizes of features
+
+```python
+Interface(address_or_location_name, point) -> {feature_name: feature_value}
+```
