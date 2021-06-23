@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union
 
 import geopy
@@ -12,11 +13,11 @@ from ._osm_features import DEFAULT_FEATURE_NAMES, FEATURES
 OVERPASS = Overpass()
 
 
-def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float, float]:
+def get_bounding_box_around(point: Point, radius_km=1.) -> Tuple[float, float, float, float]:
     """
     https://stackoverflow.com/questions/24427828/calculate-point-based-on-distance-and-direction
     """
-    center = Point(lat, lon)
+    center = point
     r = geopy.distance.distance(kilometers=radius_km)
     north: Point = r.destination(point=center, bearing=0)
     east: Point = r.destination(point=center, bearing=90)
@@ -31,15 +32,23 @@ def get_bounding_box_around(lat, lon, radius_km=1.) -> Tuple[float, float, float
 
 
 def get_count_around(
-    lat: float, lon: float, elementType: Union[str, List[str]], selector: str, radius_km: float = 1.
+    point: Point,
+    elementType: Union[str, List[str]],
+    selector: str,
+    radius_km: float = 1.,
+    dt: Optional[datetime] = None,
 ) -> int:
     query = overpassQueryBuilder(
-        bbox=get_bounding_box_around(lat, lon, radius_km=radius_km),
+        bbox=get_bounding_box_around(point, radius_km=radius_km),
         elementType=elementType,
         selector=selector,
         out='count'
     )
-    result = OVERPASS.query(query, timeout=30)
+    # https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL#date
+    p = {}
+    if dt is not None:
+        p.update({'date': f'{dt.isoformat()}Z'})
+    result = OVERPASS.query(query, timeout=60, **p)
     return result.countElements()
 
 
@@ -66,7 +75,12 @@ class OpenStreetMaps:
         })
         self.radius_km = radius_km
 
-    def __call__(self, location_str: Optional[str] = None, point: Optional[Point] = None) -> dict:
+    def __call__(
+        self,
+        location_str: Optional[str] = None,
+        point: Optional[Point] = None,
+        dt: Optional[datetime] = None,
+    ) -> dict:
         if point is not None:
             point = point
         elif location_str is not None:
@@ -74,16 +88,14 @@ class OpenStreetMaps:
             point = Point(latitude=lat, longitude=lon)
         else:
             raise ValueError('At least one of location_str or point must be provided!')
-        print(point)
-        print(self.selected_features)
         res = {}
         for feature_name, v in self.selected_features.items():
             elementType, selector = v
             res[f'count_{feature_name}'] = get_count_around(
-                lat=point.latitude,
-                lon=point.longitude,
+                point=point,
                 elementType=elementType,
                 selector=selector,
-                radius_km=self.radius_km
+                radius_km=self.radius_km,
+                dt=dt
             )
         return res
