@@ -35,6 +35,7 @@ class Fourier:
         day_of_week: bool = True,
         hour_of_day: bool = True,
         minute_of_hour: bool = True,
+        use_period_fraction: float = 1.,
     ):
         self.selected_periods = {}
         if week_of_year:
@@ -47,12 +48,13 @@ class Fourier:
             self.selected_periods['hour_of_day'] = PERIODS['hour_of_day']
         if minute_of_hour:
             self.selected_periods['minute_of_hour'] = PERIODS['minute_of_hour']
+        self.use_period_fraction = use_period_fraction
 
     def __call__(self, dt: datetime) -> dict:
         out = {}
         for period_name, period in self.selected_periods.items():
             for reg_name, reg_fn in REGULARITY.items():
-                for i in range(ceil(period.period)):
+                for i in range(ceil(period.period * self.use_period_fraction)):
                     out[f'{period_name}_{reg_name}_phase_{i}'] = reg_fn(
                         2 * pi * (period.conversion_fn(dt) + i) / period.period
                     )
