@@ -13,7 +13,8 @@ pip install SpaceTimePandas
 ```python
 >>> import datetime
 >>> from stpd.event import Holiday
->>> Holiday('US')(datetime.date(2022, 1, 17))
+>>> us_holidays = Holiday(years=[2021, 2022, 2023], country='US')
+>>> us_holidays(datetime.date(2022, 1, 17))
 {
     'us_holiday_days_since_last': 0,
     'us_holiday_days_to_next': 35
