@@ -1,9 +1,7 @@
-from datetime import datetime
-
 from dataclasses import dataclass
+from datetime import datetime
+from math import ceil, cos, pi, sin
 from typing import Callable, Dict
-
-from math import cos, sin, pi, ceil
 
 
 @dataclass

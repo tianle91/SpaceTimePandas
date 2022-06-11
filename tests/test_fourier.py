@@ -1,5 +1,6 @@
-from stpd.fourier import Fourier
 from datetime import datetime
+
+from stpd.fourier import Fourier
 
 
 def test_fourier():

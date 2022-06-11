@@ -1,6 +1,7 @@
-from stpd.event import Holiday
 import datetime
+
+from stpd.event import Holiday
 
 
 def test_holiday():
-    Holiday('US')(datetime.date(2022, 1, 17))
+    Holiday(years=[2021, 2022, 2023], country='US')(datetime.date(2022, 1, 17))
