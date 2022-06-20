@@ -35,6 +35,14 @@ pip install SpaceTimePandas
 }
 ```
 
+```python
+>>> from stpd.nytsentiment import NYTimesSentiment
+>>> from datetime import date
+>>> nytsentiment = NYTimesSentiment(api_key='<GET-ONE-FROM-NYT-DEVELOPERS-API>')
+>>> nytsentiment(date(2022, 6, 1))
+{'negative': 0.04179099574685097, 'positive': 0.9582089781761169}
+```
+
 
 # Location features
 ```python
