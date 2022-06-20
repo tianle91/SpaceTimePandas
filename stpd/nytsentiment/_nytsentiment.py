@@ -1,6 +1,4 @@
-import os
 from datetime import date, datetime, timedelta
-from typing import Optional
 from urllib.parse import urljoin
 
 import requests
