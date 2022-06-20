@@ -6,4 +6,4 @@ import os
 
 def test_NYTimesSentiment():
     nytsentiment = NYTimesSentiment(api_key=os.getenv('NYT_API_KEY'))
-    nytsentiment(date(2022, 6, 1))
+    assert len(nytsentiment(date(2022, 6, 1))) == 2
