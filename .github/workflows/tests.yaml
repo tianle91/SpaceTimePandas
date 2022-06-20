@@ -17,4 +17,5 @@ jobs:
       - name: run tests
         env:
           ORS_SECRET: ${{ secrets.ORS_SECRET }}
+          NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
         run: pytest tests
