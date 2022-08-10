@@ -2,7 +2,7 @@
 Location and date features from a bunch of api sources to Pandas.
 Repository hosted on [GitHub](https://github.com/tianle91/SpaceTimePandas).
 
-![icon](SpaceTimePandas.png)
+![icon](https://raw.githubusercontent.com/tianle91/SpaceTimePandas/main/SpaceTimePandas.png)
 ```
 pip install SpaceTimePandas
 ```
